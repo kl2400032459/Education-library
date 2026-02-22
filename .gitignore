@@ -1,0 +1,16 @@
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Build outputs
+/resource-library-ui/dist/
+/react-app/dist/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Misc
+.env*
+*.local
