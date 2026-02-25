@@ -1,32 +1,30 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Card from '../../components/Card';
+import { MOCK_RESOURCES } from '../../data/mockData';
 import './BrowseResources.css';
-
-const MOCK_RESOURCES = [
-    { id: 1, title: 'Introduction to Algorithms', subject: 'Computer Science', department: 'Engineering', type: 'Textbook', rating: 4.8, description: 'Comprehensive guide to algorithms and data structures.', tags: ['Algorithms', 'CS'], thumb: '📘' },
-    { id: 2, title: 'Calculus Vol 1', subject: 'Mathematics', department: 'Science', type: 'Notes', rating: 4.5, description: 'First semester calculus lecture notes.', tags: ['Math', 'Calculus'], thumb: '📐' },
-    { id: 3, title: 'Physics Fundamentals', subject: 'Physics', department: 'Science', type: 'Video', rating: 4.2, description: 'Video lectures on classical mechanics.', tags: ['Physics', 'Mechanics'], thumb: '⚛️' },
-    { id: 4, title: 'React Advanced Patterns', subject: 'Web Dev', department: 'Engineering', type: 'Video', rating: 4.9, description: 'Advanced react architecture and hooks.', tags: ['React', 'Frontend'], thumb: '💻' },
-    { id: 5, title: 'Organic Chemistry', subject: 'Chemistry', department: 'Science', type: 'Textbook', rating: 4.1, description: 'Detailed organic chemistry mechanisms.', tags: ['Chemistry'], thumb: '🧪' },
-    { id: 6, title: 'World History Notes', subject: 'History', department: 'Arts', type: 'Notes', rating: 4.6, description: 'Summary notes for world history midterms.', tags: ['History'], thumb: '🌍' }
-];
 
 const FILTER_SUBJECTS = ['All', 'Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'History', 'Web Dev'];
 const FILTER_DEPARTMENTS = ['All', 'Engineering', 'Science', 'Arts'];
 const FILTER_TYPES = ['All', 'Textbook', 'Notes', 'Video'];
 
 const BrowseResources = () => {
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-    const [searchTerm, setSearchTerm] = useState('');
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialSearch = queryParams.get('search') || '';
+    const initialSubject = queryParams.get('subject') || 'All';
+
+    const [viewMode, setViewMode] = useState('grid');
+    const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [sortBy, setSortBy] = useState('popular');
 
     const [filters, setFilters] = useState({
-        subject: 'All',
+        subject: FILTER_SUBJECTS.includes(initialSubject) ? initialSubject : 'All',
         department: 'All',
         type: 'All'
     });
+
 
     const handleFilterChange = (filterName, value) => {
         setFilters(prev => ({ ...prev, [filterName]: value }));

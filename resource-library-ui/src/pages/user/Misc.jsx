@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import Card from '../../components/Card';
 import RoleBadge from '../../components/RoleBadge';
 import { motion } from 'framer-motion';
+import { getDownloads, getBookmarks, getFeedback } from '../../utils/storage';
+import { Link } from 'react-router-dom';
 import './Misc.css';
 
-export const Profile = () => {
+export const Profile = ({ role }) => {
     const [activeTab, setActiveTab] = useState('downloads');
 
     const userInfo = {
@@ -15,19 +17,21 @@ export const Profile = () => {
         department: 'Computer Science'
     };
 
-    const mockDownloads = [
-        { id: 1, title: 'Introduction to Algorithms', date: '2023-10-01' },
-        { id: 2, title: 'Calculus Vol 1', date: '2023-09-15' }
-    ];
+    const [downloads] = useState(() => getDownloads());
+    const [bookmarks] = useState(() => getBookmarks());
+    const [feedback] = useState(() => getFeedback());
 
-    const mockBookmarks = [
-        { id: 3, title: 'Physics Fundamentals', date: '2023-10-05' },
-        { id: 4, title: 'React Advanced Patterns', date: '2023-10-20' }
-    ];
-
-    const mockFeedback = [
-        { id: 1, resource: 'Organic Chemistry', rating: 4, text: 'Very detailed mechanism explanations.' }
-    ];
+    if (role === 'guest') {
+        return (
+            <div className="profile-page" style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <Card className="glass" style={{ padding: '3rem', textAlign: 'center' }}>
+                    <h2 style={{ marginBottom: '1rem' }}>Restricted Access</h2>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>You must be logged in to view your profile.</p>
+                    <Link to="/login" className="primary-action-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Log In Now</Link>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="profile-page">
@@ -71,9 +75,9 @@ export const Profile = () => {
                     <div className="profile-tab-content">
                         {activeTab === 'downloads' && (
                             <div className="tab-pane">
-                                {mockDownloads.length > 0 ? (
+                                {downloads.length > 0 ? (
                                     <ul className="profile-list">
-                                        {mockDownloads.map(d => (
+                                        {downloads.map(d => (
                                             <li key={d.id} className="profile-list-item">
                                                 <span className="item-title">{d.title}</span>
                                                 <span className="item-meta">Downloaded {d.date}</span>
@@ -88,9 +92,9 @@ export const Profile = () => {
 
                         {activeTab === 'bookmarks' && (
                             <div className="tab-pane">
-                                {mockBookmarks.length > 0 ? (
+                                {bookmarks.length > 0 ? (
                                     <ul className="profile-list">
-                                        {mockBookmarks.map(b => (
+                                        {bookmarks.map(b => (
                                             <li key={b.id} className="profile-list-item">
                                                 <span className="item-title">{b.title}</span>
                                                 <span className="item-meta">Bookmarked {b.date}</span>
@@ -105,9 +109,9 @@ export const Profile = () => {
 
                         {activeTab === 'feedback' && (
                             <div className="tab-pane">
-                                {mockFeedback.length > 0 ? (
+                                {feedback.length > 0 ? (
                                     <ul className="profile-list">
-                                        {mockFeedback.map(f => (
+                                        {feedback.map(f => (
                                             <li key={f.id} className="profile-feedback-item">
                                                 <div className="fb-header">
                                                     <span className="fb-resource">{f.resource}</span>
@@ -155,7 +159,7 @@ export const FeedbackForm = () => {
                                 className="misc-textarea"
                             ></textarea>
                         </div>
-                        <button type="submit" className="auth-submit-btn">Submit Feedback</button>
+                        <button type="submit" className="auth-submit-btn primary-action-btn">Submit Feedback</button>
                     </form>
                 </Card>
             </motion.div>

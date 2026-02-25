@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
-const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
+const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
@@ -20,9 +20,9 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
     const [strength, setStrength] = useState(0);
 
     const roles = [
-        { id: 'student', label: 'Student' },
-        { id: 'teacher', label: 'Faculty' },
-        { id: 'admin', label: 'Admin' }
+        { id: 'Student', label: 'Student' },
+        { id: 'Faculty', label: 'Faculty' },
+        { id: 'Admin', label: 'Admin' }
     ];
 
     const calculateStrength = (pwd) => {
@@ -53,7 +53,7 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
             if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Mismatch';
             if (!formData.terms) newErrors.terms = 'Required';
 
-            if (role === 'student' || role === 'teacher') {
+            if (role === 'Student' || role === 'Faculty') {
                 if (!formData.dept) newErrors.dept = 'Required';
                 if (!formData.idNumber) newErrors.idNumber = 'Required';
             }
@@ -66,7 +66,7 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
         e.preventDefault();
         if (validateForm()) {
             setGlobalRole(role);
-            if (role === 'admin') navigate('/admin/dashboard');
+            if (role === 'Admin') navigate('/admin/dashboard');
             else navigate('/home');
         }
     };
@@ -85,21 +85,24 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
                 </h2>
 
                 <div className="auth-mode-switch">
-                    <button
-                        className={mode === 'login' ? 'active' : ''}
-                        onClick={() => setMode('login')}
+                    <Link
+                        to="/login"
+                        className={mode === 'login' ? 'active tab-link' : 'tab-link'}
+                        style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
                     >
                         Login
-                    </button>
-                    <button
-                        className={mode === 'signup' ? 'active' : ''}
-                        onClick={() => setMode('signup')}
+                    </Link>
+                    <Link
+                        to="/register"
+                        className={mode === 'signup' ? 'active tab-link' : 'tab-link'}
+                        style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
                     >
                         Signup
-                    </button>
+                    </Link>
                 </div>
 
                 <form className="auth-form-minimal" onSubmit={handleSubmit}>
+                    {/* Role Selection to choose account type or login as */}
                     <div className="role-segmented-control">
                         {roles.map(r => (
                             <button
@@ -167,26 +170,25 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
                                     {errors.email && <span className="field-error">{errors.email}</span>}
                                 </div>
 
-                                {(role === 'student' || role === 'teacher') && (
-                                    <div className="input-field">
-                                        <label>Department</label>
-                                        <input type="text" name="dept" value={formData.dept} onChange={handleChange} />
-                                        {errors.dept && <span className="field-error">{errors.dept}</span>}
-                                    </div>
+                                {(role === 'Student' || role === 'Faculty') && (
+                                    <>
+                                        <div className="input-field">
+                                            <label>Department</label>
+                                            <input type="text" name="dept" value={formData.dept} onChange={handleChange} />
+                                            {errors.dept && <span className="field-error">{errors.dept}</span>}
+                                        </div>
+                                        <div className="input-field">
+                                            <label>ID Number</label>
+                                            <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} />
+                                            {errors.idNumber && <span className="field-error">{errors.idNumber}</span>}
+                                        </div>
+                                    </>
                                 )}
 
-                                {role === 'student' && (
+                                {role === 'Admin' && (
                                     <div className="input-field">
-                                        <label>University ID / Roll No.</label>
-                                        <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} />
-                                        {errors.idNumber && <span className="field-error">{errors.idNumber}</span>}
-                                    </div>
-                                )}
-
-                                {role === 'teacher' && (
-                                    <div className="input-field">
-                                        <label>Faculty ID</label>
-                                        <input type="text" name="idNumber" value={formData.idNumber} onChange={handleChange} />
+                                        <label>Admin Secret Key</label>
+                                        <input type="password" name="idNumber" value={formData.idNumber} onChange={handleChange} placeholder="Provide authorization key..." />
                                         {errors.idNumber && <span className="field-error">{errors.idNumber}</span>}
                                     </div>
                                 )}
@@ -215,15 +217,15 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
                     </AnimatePresence>
 
                     <button type="submit" className="primary-action-btn">
-                        {mode === 'login' ? 'Sign In' : 'Create Account'}
+                        {mode === 'login' ? `Sign In as ${role}` : 'Create Account'}
                     </button>
                 </form>
 
                 <div className="auth-footer">
                     {mode === 'login' ? (
-                        <p>No account? <button onClick={() => setMode('signup')} className="text-link">Register now</button></p>
+                        <p>No account? <Link to="/register" className="auth-link">Register now</Link></p>
                     ) : (
-                        <p>Already a member? <button onClick={() => setMode('login')} className="text-link">Sign in</button></p>
+                        <p>Already a member? <Link to="/login" className="auth-link">Sign in</Link></p>
                     )}
                 </div>
             </motion.div>
@@ -233,14 +235,12 @@ const AuthCard = ({ mode, setMode, role, setRole, setGlobalRole }) => {
 
 // Specialized wrappers for routing
 export const Login = ({ setRole }) => {
-    const [mode, setMode] = useState('login');
-    const [localRole, setLocalRole] = useState('student');
-    return <AuthCard mode={mode} setMode={setMode} role={localRole} setRole={setLocalRole} setGlobalRole={setRole} />;
+    const [localRole, setLocalRole] = useState('Student');
+    return <AuthCard mode="login" role={localRole} setRole={setLocalRole} setGlobalRole={setRole} />;
 };
 
 export const Register = ({ setRole }) => {
-    const [mode, setMode] = useState('signup');
-    const [localRole, setLocalRole] = useState('student');
-    return <AuthCard mode={mode} setMode={setMode} role={localRole} setRole={setLocalRole} setGlobalRole={setRole} />;
+    const [localRole, setLocalRole] = useState('Student');
+    return <AuthCard mode="signup" role={localRole} setRole={setLocalRole} setGlobalRole={setRole} />;
 };
 

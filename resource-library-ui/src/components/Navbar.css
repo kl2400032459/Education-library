@@ -3,16 +3,17 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: var(--spacing-md) var(--spacing-xl);
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-glass);
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: var(--spacing-sm);
+    left: 2%;
+    width: 96%;
     z-index: 1000;
 }
 
@@ -75,18 +76,19 @@
 }
 
 .nav-btn {
-    padding: 0.5rem 1.5rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
     background: var(--primary);
     color: white;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-weight: 600;
-    transition: background 0.2s, transform 0.2s;
+    transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .nav-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .theme-toggle {
@@ -195,12 +197,14 @@
 
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 1rem);
+    top: calc(100% + var(--spacing-sm));
     right: 0;
     min-width: 240px;
-    border-radius: 12px;
-    padding: 0.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-sm);
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
     animation: fadeInDown 0.3s ease;
 }
 

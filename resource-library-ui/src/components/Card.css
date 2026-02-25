@@ -1,15 +1,18 @@
 .card {
     background: var(--surface);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
 .card:hover {
     cursor: pointer;
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
 }
 
 .card-title {

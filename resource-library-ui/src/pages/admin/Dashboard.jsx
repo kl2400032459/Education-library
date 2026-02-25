@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Card from '../../components/Card';
 import Table from '../../components/Table';
 import RoleBadge from '../../components/RoleBadge';
@@ -8,7 +8,7 @@ import './Dashboard.css';
 const AdminDashboard = () => {
     // Add logic for simulating counting up numbers for stats
     const [animatedStats, setAnimatedStats] = useState([0, 0, 0, 0]);
-    const targetStats = [2450, 8432, 12450, 482];
+    const targetStats = useMemo(() => [2450, 8432, 12450, 482], []);
 
     useEffect(() => {
         let currentValues = [0, 0, 0, 0];
@@ -25,7 +25,7 @@ const AdminDashboard = () => {
         });
 
         return () => intervals.forEach(clearInterval);
-    }, []);
+    }, [targetStats]);
 
     const statsConfig = [
         { title: 'Total Resources', value: animatedStats[0].toLocaleString(), icon: '📚', delta: '+12% this week', positive: true },

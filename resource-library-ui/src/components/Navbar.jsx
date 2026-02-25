@@ -30,12 +30,18 @@ const Navbar = ({ role, setRole }) => {
             { label: 'Home', path: '/home' },
             { label: 'Browse', path: '/browse' }
         ],
-        user: [
+        Student: [
             { label: 'Home', path: '/home' },
             { label: 'Browse', path: '/browse' },
             { label: 'Bookmarks', path: '/profile#bookmarks' }
         ],
-        admin: [
+        Faculty: [
+            { label: 'Home', path: '/home' },
+            { label: 'Browse', path: '/browse' },
+            { label: 'My Uploads', path: '/profile#uploads' },
+            { label: 'Bookmarks', path: '/profile#bookmarks' }
+        ],
+        Admin: [
             { label: 'Dashboard', path: '/admin/dashboard' },
             { label: 'Upload', path: '/admin/upload' },
             { label: 'Resources', path: '/admin/resources' },
@@ -46,20 +52,13 @@ const Navbar = ({ role, setRole }) => {
 
     const currentLinks = navLinks[role] || navLinks.guest;
 
-    // A simple role switcher for debug purposes, since we don't have a real backend yet
-    const handleRoleSwitch = (e) => {
-        const newRole = e.target.value;
-        setRole(newRole);
-        if (newRole === 'admin') navigate('/admin/dashboard');
-        else navigate('/home');
-    };
 
     return (
         <header className="global-navbar">
             <div className="nav-container">
-                <div className="logo cursor-pointer" onClick={() => navigate(role === 'admin' ? '/admin/dashboard' : '/home')}>
+                <Link to={role === 'Admin' ? '/admin/dashboard' : '/home'} className="logo" style={{ textDecoration: 'none' }}>
                     EduLibrary
-                </div>
+                </Link>
 
                 <div className="desktop-view">
                     <nav className="nav-links">
@@ -74,7 +73,7 @@ const Navbar = ({ role, setRole }) => {
                         ))}
                     </nav>
 
-                    {(role === 'admin' || role === 'user') && (
+                    {(role === 'Admin' || role === 'Student' || role === 'Faculty') && (
                         <div className="nav-search-center">
                             <div className="search-input-wrapper">
                                 <span className="search-icon">🔍</span>
@@ -89,11 +88,6 @@ const Navbar = ({ role, setRole }) => {
                     )}
 
                     <div className="nav-actions">
-                        <select className="role-switcher" value={role} onChange={handleRoleSwitch} title="Debug Role Switcher">
-                            <option value="guest">Guest View</option>
-                            <option value="user">User View</option>
-                            <option value="admin">Admin View</option>
-                        </select>
 
                         <button
                             className="theme-toggle"
@@ -103,7 +97,7 @@ const Navbar = ({ role, setRole }) => {
                             {isDarkMode ? '☀️' : '🌙'}
                         </button>
 
-                        {(role === 'admin' || role === 'user') && (
+                        {(role === 'Admin' || role === 'Student' || role === 'Faculty') && (
                             <>
                                 <div className="nav-icon-action relative">
                                     <button
@@ -120,7 +114,6 @@ const Navbar = ({ role, setRole }) => {
                                             <div className="dropdown-item">New resource uploaded: "Calculus III"</div>
                                             <div className="dropdown-item">User "Sarah M." registered</div>
                                             <div className="dropdown-item">Alert: System maintenance tonight</div>
-                                            <div className="dropdown-footer">View All</div>
                                         </div>
                                     )}
                                 </div>
@@ -137,7 +130,6 @@ const Navbar = ({ role, setRole }) => {
                                         <div className="dropdown-menu profile-dropdown glass">
                                             <div className="dropdown-header">Account</div>
                                             <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>My Profile</Link>
-                                            <div className="dropdown-item">Settings</div>
                                             <div className="divider"></div>
                                             <button className="dropdown-item logout-colored" onClick={handleLogout}>Logout</button>
                                         </div>
@@ -184,13 +176,13 @@ const Navbar = ({ role, setRole }) => {
                                 <Link to="/register" className="mobile-nav-btn" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
                             </>
                         )}
-                        {role === 'user' && (
+                        {(role === 'Student' || role === 'Faculty') && (
                             <>
                                 <Link to="/profile" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>👤 Profile</Link>
                                 <button className="mobile-logout-btn" onClick={handleLogout}>Logout</button>
                             </>
                         )}
-                        {role === 'admin' && (
+                        {role === 'Admin' && (
                             <button className="mobile-logout-btn" onClick={handleLogout}>⎋ Logout</button>
                         )}
                     </div>
