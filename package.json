@@ -2,6 +2,7 @@
   "name": "education-library-root",
   "private": true,
   "scripts": {
+    "postinstall": "npm install --prefix resource-library-ui",
     "dev": "npm run dev --prefix resource-library-ui",
     "build": "npm run build --prefix resource-library-ui",
     "preview": "npm run preview --prefix resource-library-ui",
