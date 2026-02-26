@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../../components/Card';
 import Table from '../../components/Table';
 import RoleBadge from '../../components/RoleBadge';
@@ -7,6 +7,41 @@ import './Management.css';
 
 export const ManageResources = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [typeFilter, setTypeFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [resources, setResources] = useState([]);
+
+    useEffect(() => {
+        // Load resources from local storage once on mount
+        const loadDocs = async () => {
+            const { getStoredResources } = await import('../../data/mockData');
+            setResources(getStoredResources());
+        };
+        loadDocs();
+    }, []);
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this resource?")) return;
+
+        const { getStoredResources, setStoredResources } = await import('../../data/mockData');
+        const currentRes = getStoredResources();
+        const updatedRes = currentRes.filter(r => r.id !== id);
+        setStoredResources(updatedRes);
+        setResources(updatedRes);
+    };
+
+    const handleToggleStatus = async (id) => {
+        const { getStoredResources, setStoredResources } = await import('../../data/mockData');
+        const currentRes = getStoredResources();
+        const updatedRes = currentRes.map(r => {
+            if (r.id === id) {
+                return { ...r, status: r.status === 'Active' ? 'Pending' : 'Active' };
+            }
+            return r;
+        });
+        setStoredResources(updatedRes);
+        setResources(updatedRes);
+    }
 
     const columns = [
         { Header: 'ID', accessor: 'id' },
@@ -16,35 +51,37 @@ export const ManageResources = () => {
         { Header: 'Actions', accessor: 'actions' },
     ];
 
-    const data = [
-        {
-            id: '101', title: 'Calculus Notes', type: 'PDF', status: 'Active',
-            actions: (
-                <div className="table-actions">
-                    <button className="action-icon edit" title="Edit">✏️</button>
-                    <button className="action-icon delete" title="Delete">🗑️</button>
-                </div>
-            )
-        },
-        {
-            id: '102', title: 'React Guide', type: 'Video', status: 'Pending',
-            actions: (
-                <div className="table-actions">
-                    <button className="action-icon approve" title="Approve">✅</button>
-                    <button className="action-icon delete" title="Delete">🗑️</button>
-                </div>
-            )
-        },
-        {
-            id: '103', title: 'Physics Labs', type: 'Document', status: 'Active',
-            actions: (
-                <div className="table-actions">
-                    <button className="action-icon edit" title="Edit">✏️</button>
-                    <button className="action-icon delete" title="Delete">🗑️</button>
-                </div>
-            )
-        },
-    ];
+    const filteredData = resources.filter(res => {
+        const matchesSearch = res.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            res.id.toString().includes(searchTerm);
+        const matchesType = typeFilter === 'all' || res.type.toLowerCase() === typeFilter.toLowerCase();
+
+        // Mock data didn't originally strictly enforce status uniformly, so we handle undefined defensively
+        const resStatus = res.status || 'Active';
+        const matchesStatus = statusFilter === 'all' || resStatus.toLowerCase() === statusFilter.toLowerCase();
+
+        return matchesSearch && matchesType && matchesStatus;
+    });
+
+    const data = filteredData.map(res => ({
+        id: res.id,
+        title: res.title,
+        type: res.type,
+        status: <span className={`status-pill ${(res.status || 'Active').toLowerCase()}`}>{res.status || 'Active'}</span>,
+        actions: (
+            <div className="table-actions">
+                <button
+                    className={`action-icon ${res.status === 'Active' ? 'lock' : 'approve'}`}
+                    title={res.status === 'Active' ? 'Suspend' : 'Approve'}
+                    onClick={() => handleToggleStatus(res.id)}
+                >
+                    {res.status === 'Active' ? '⏸️' : '✅'}
+                </button>
+                <button className="action-icon delete" title="Delete" onClick={() => handleDelete(res.id)}>🗑️</button>
+            </div>
+        )
+    }));
+
 
     return (
         <div className="management-page">
@@ -61,12 +98,13 @@ export const ManageResources = () => {
                     />
                 </div>
                 <div className="filter-group">
-                    <select className="custom-select">
+                    <select className="custom-select" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
                         <option value="all">All Types</option>
-                        <option value="pdf">PDF</option>
+                        <option value="textbook">Textbook</option>
+                        <option value="notes">Notes</option>
                         <option value="video">Video</option>
                     </select>
-                    <select className="custom-select">
+                    <select className="custom-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
                         <option value="pending">Pending</option>
@@ -84,6 +122,33 @@ export const ManageResources = () => {
 export const ManageUsers = () => {
     const [isAddUserOpen, setIsAddUserOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [roleFilter, setRoleFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [users, setUsers] = useState([]);
+
+    // New user form state
+    const [newUser, setNewUser] = useState({ name: '', email: '', role: 'Student' });
+
+    useEffect(() => {
+        const loadDocs = async () => {
+            const { getStoredUsers } = await import('../../data/mockData');
+            setUsers(getStoredUsers());
+        };
+        loadDocs();
+    }, []);
+
+    const handleToggleStatus = async (id) => {
+        const { getStoredUsers, setStoredUsers } = await import('../../data/mockData');
+        const currentUsers = getStoredUsers();
+        const updatedUsers = currentUsers.map(u => {
+            if (u.id === id) {
+                return { ...u, status: u.status === 'Active' ? 'Suspended' : 'Active' };
+            }
+            return u;
+        });
+        setStoredUsers(updatedUsers);
+        setUsers(updatedUsers);
+    };
 
     const columns = [
         { Header: 'User ID', accessor: 'id' },
@@ -94,35 +159,55 @@ export const ManageUsers = () => {
         { Header: 'Actions', accessor: 'actions' },
     ];
 
-    const data = [
-        {
-            id: 'U001', name: 'Alice Smith', email: 'alice@student.edu', role: <RoleBadge role="Student" />, status: 'Active',
-            actions: (
-                <div className="table-actions">
-                    <button className="action-icon edit" title="Edit User">✏️</button>
-                    <button className="action-icon lock" title="Suspend User">🔒</button>
-                </div>
-            )
-        },
-        {
-            id: 'U002', name: 'Dr. Bob Jones', email: 'bjones@faculty.edu', role: <RoleBadge role="Faculty" />, status: 'Active',
-            actions: (
-                <div className="table-actions">
-                    <button className="action-icon edit" title="Edit User">✏️</button>
-                    <button className="action-icon lock" title="Suspend User">🔒</button>
-                </div>
-            )
-        },
-        {
-            id: 'U003', name: 'Charlie Brown', email: 'charlie@student.edu', role: <RoleBadge role="Admin" />, status: 'Suspended',
-            actions: (
-                <div className="table-actions">
-                    <button className="action-icon edit" title="Edit User">✏️</button>
-                    <button className="action-icon approve" title="Restore User">✅</button>
-                </div>
-            )
-        },
-    ];
+    const filteredUsers = users.filter(u => {
+        const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u.id.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesRole = roleFilter === 'all' || u.role.toLowerCase() === roleFilter.toLowerCase();
+        const matchesStatus = statusFilter === 'all' || u.status.toLowerCase() === statusFilter.toLowerCase();
+
+        return matchesSearch && matchesRole && matchesStatus;
+    });
+
+    const data = filteredUsers.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: <RoleBadge role={u.role} />,
+        status: <span className={`status-pill ${u.status.toLowerCase()}`}>{u.status}</span>,
+        actions: (
+            <div className="table-actions">
+                <button
+                    className={`action-icon ${u.status === 'Active' ? 'lock' : 'approve'}`}
+                    title={u.status === 'Active' ? 'Suspend User' : 'Restore User'}
+                    onClick={() => handleToggleStatus(u.id)}
+                >
+                    {u.status === 'Active' ? '🔒' : '✅'}
+                </button>
+            </div>
+        )
+    }));
+
+    const handleAddUserSubmit = async (e) => {
+        e.preventDefault();
+        const { getStoredUsers, setStoredUsers } = await import('../../data/mockData');
+        const currentUsers = getStoredUsers();
+        const newId = `U00${currentUsers.length + 1}`;
+
+        const addedUser = {
+            ...newUser,
+            id: newId,
+            status: 'Active',
+            joined: new Date().toISOString().split('T')[0]
+        };
+
+        const updated = [...currentUsers, addedUser];
+        setStoredUsers(updated);
+        setUsers(updated);
+
+        setIsAddUserOpen(false);
+        setNewUser({ name: '', email: '', role: 'Student' });
+    };
 
     return (
         <div className="management-page relative-container">
@@ -148,12 +233,13 @@ export const ManageUsers = () => {
                     />
                 </div>
                 <div className="filter-group">
-                    <select className="custom-select">
+                    <select className="custom-select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
                         <option value="all">All Roles</option>
                         <option value="student">Student</option>
                         <option value="faculty">Faculty</option>
+                        <option value="admin">Admin</option>
                     </select>
-                    <select className="custom-select">
+                    <select className="custom-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
                         <option value="suspended">Suspended</option>
@@ -178,14 +264,14 @@ export const ManageUsers = () => {
                             <h2>Add New User</h2>
                             <button className="modal-close-btn" onClick={() => setIsAddUserOpen(false)}>✕</button>
                         </div>
-                        <form className="admin-form" onSubmit={(e) => { e.preventDefault(); setIsAddUserOpen(false); }}>
+                        <form className="admin-form" onSubmit={handleAddUserSubmit}>
                             <div className="form-group">
                                 <label>Full Name</label>
-                                <input type="text" placeholder="John Doe" required />
+                                <input type="text" placeholder="Nikhil Reddy" required value={newUser.name} onChange={e => setNewUser({ ...newUser, name: e.target.value })} />
                             </div>
                             <div className="form-group">
                                 <label>Email Address</label>
-                                <input type="email" placeholder="john@email.com" required />
+                                <input type="email" placeholder="nikhil@email.com" required value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
                             </div>
                             <div className="form-group">
                                 <label>Temporary Password</label>
@@ -193,10 +279,10 @@ export const ManageUsers = () => {
                             </div>
                             <div className="form-group">
                                 <label>System Role</label>
-                                <select className="custom-select" required>
-                                    <option>Student</option>
-                                    <option>Faculty</option>
-                                    <option>Admin</option>
+                                <select className="custom-select" required value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
+                                    <option value="Student">Student</option>
+                                    <option value="Faculty">Faculty</option>
+                                    <option value="Admin">Admin</option>
                                 </select>
                             </div>
                             <div className="modal-actions">
@@ -218,14 +304,15 @@ export const ViewFeedback = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedFeedback, setSelectedFeedback] = useState(null);
     const [replyText, setReplyText] = useState('');
+    const [feedbackData, setFeedbackData] = useState([]);
 
-    const feedbackData = [
-        { id: 'FB001', user: 'Alice Smith', role: 'Student', rating: 5, status: 'New', date: '2026-02-22', message: 'Excellent breakdown of React Hooks. Helped me immensely in my final project!' },
-        { id: 'FB002', user: 'Dr. John Doe', role: 'Faculty', rating: 4, status: 'Reviewed', date: '2026-02-21', message: 'Solid notes on Calculus, but could use a few more examples for integration by parts.' },
-        { id: 'FB003', user: 'Sarah Miller', role: 'Student', rating: 2, status: 'New', date: '2026-02-20', message: 'The Physics Lab PDF has some formatting issues on mobile devices.' },
-        { id: 'FB004', user: 'Mike Ross', role: 'Admin', rating: 5, status: 'Resolved', date: '2026-02-19', message: 'The new resource upload limit is working perfectly.' },
-        { id: 'FB005', user: 'Emily White', role: 'Student', rating: 1, status: 'New', date: '2026-02-18', message: 'I cannot find the semester code filters anymore. Help!' },
-    ];
+    useEffect(() => {
+        const loadDocs = async () => {
+            const { getStoredFeedback } = await import('../../data/mockData');
+            setFeedbackData(getStoredFeedback());
+        };
+        loadDocs();
+    }, []);
 
     const generateStars = (rating) => {
         return Array(5).fill(0).map((_, i) => (
@@ -259,6 +346,15 @@ export const ViewFeedback = () => {
         { Header: 'Actions', accessor: 'actions' },
     ];
 
+    const handleDeleteFeedback = async (id) => {
+        if (!window.confirm("Delete this feedback?")) return;
+        const { getStoredFeedback, setStoredFeedback } = await import('../../data/mockData');
+        const currentFb = getStoredFeedback();
+        const updatedFb = currentFb.filter(f => f.id !== id);
+        setStoredFeedback(updatedFb);
+        setFeedbackData(updatedFb);
+    };
+
     const tableData = filteredFeedback.map(fb => ({
         ...fb,
         role: <RoleBadge role={fb.role} />,
@@ -267,7 +363,7 @@ export const ViewFeedback = () => {
         actions: (
             <div className="table-actions">
                 <button className="action-icon view" title="View Details" onClick={() => setSelectedFeedback(fb)}>👁️</button>
-                <button className="action-icon delete" title="Delete Feedback">🗑️</button>
+                <button className="action-icon delete" title="Delete Feedback" onClick={() => handleDeleteFeedback(fb.id)}>🗑️</button>
             </div>
         )
     }));
@@ -390,8 +486,20 @@ export const ViewFeedback = () => {
                             </div>
                             <div className="modal-actions">
                                 <button className="action-btn secondary" onClick={() => setSelectedFeedback(null)}>Close</button>
-                                <button className="action-btn primary" onClick={() => {
-                                    alert('Reply sent!');
+                                <button className="action-btn primary" onClick={async () => {
+                                    if (replyText.trim() === '') return alert("Please enter a reply.");
+                                    const { getStoredFeedback, setStoredFeedback } = await import('../../data/mockData');
+                                    const currentFb = getStoredFeedback();
+                                    const updatedFb = currentFb.map(f => {
+                                        if (f.id === selectedFeedback.id) {
+                                            return { ...f, status: 'Resolved' };
+                                        }
+                                        return f;
+                                    });
+                                    setStoredFeedback(updatedFb);
+                                    setFeedbackData(updatedFb);
+
+                                    alert('Reply sent successfully! Feedback marked as Resolved.');
                                     setSelectedFeedback(null);
                                     setReplyText('');
                                 }}>Send Reply</button>
@@ -409,19 +517,46 @@ export const UploadResource = () => {
     const [progress, setProgress] = useState(0);
     const [isSuccess, setIsSuccess] = useState(false);
 
+    const [formData, setFormData] = useState({
+        title: '', subject: '', department: '', type: '', description: ''
+    });
+
     const handleUpload = (e) => {
         e.preventDefault();
         setIsUploading(true);
         // Simulate progress
         let p = 0;
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
             p += 10;
             setProgress(p);
             if (p >= 100) {
                 clearInterval(interval);
+
+                // Add to local storage
+                const { getStoredResources, setStoredResources } = await import('../../data/mockData');
+                const currentRes = getStoredResources();
+                const newId = currentRes.length > 0 ? Math.max(...currentRes.map(r => r.id)) + 1 : 1;
+
+                const newResource = {
+                    id: newId,
+                    ...formData,
+                    rating: 5.0, // Default rating for new upload
+                    thumb: formData.type === 'Video' ? '🎬' : '📄', // Simple thumb logic
+                    tags: ['New', formData.subject],
+                    uploader: 'Admin', // Static for now until auth is fully dynamic
+                    uploadDate: new Date().toISOString().split('T')[0],
+                    downloads: 0,
+                    size: '2 MB',
+                    pages: formData.type === 'Video' ? 0 : 10,
+                    status: 'Active'
+                };
+
+                setStoredResources([newResource, ...currentRes]);
+
                 setTimeout(() => {
                     setIsUploading(false);
                     setIsSuccess(true);
+                    setFormData({ title: '', subject: '', department: '', type: '', description: '' });
                 }, 500);
             }
         }, 300);
@@ -453,45 +588,45 @@ export const UploadResource = () => {
                     <div className="form-grid">
                         <div className="form-group full-width">
                             <label>Resource Title</label>
-                            <input type="text" placeholder="e.g. Advanced AI Notes" required />
+                            <input type="text" placeholder="e.g. Advanced AI Notes" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
                         </div>
 
                         <div className="form-group grid-item">
                             <label>Subject</label>
-                            <select className="custom-select" required>
+                            <select className="custom-select" required value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })}>
                                 <option value="">Select Subject</option>
-                                <option>Computer Science</option>
-                                <option>Mathematics</option>
-                                <option>Physics</option>
-                                <option>History</option>
-                                <option>Web Dev</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Physics">Physics</option>
+                                <option value="History">History</option>
+                                <option value="Web Dev">Web Dev</option>
                             </select>
                         </div>
 
                         <div className="form-group grid-item">
                             <label>Department</label>
-                            <select className="custom-select" required>
+                            <select className="custom-select" required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })}>
                                 <option value="">Select Department</option>
-                                <option>Engineering</option>
-                                <option>Science</option>
-                                <option>Arts</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Science">Science</option>
+                                <option value="Arts">Arts</option>
                             </select>
                         </div>
 
                         <div className="form-group grid-item">
                             <label>Resource Type</label>
-                            <select className="custom-select" required>
+                            <select className="custom-select" required value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
                                 <option value="">Select Type</option>
-                                <option>Textbook</option>
-                                <option>Notes</option>
-                                <option>Video</option>
+                                <option value="Textbook">Textbook</option>
+                                <option value="Notes">Notes</option>
+                                <option value="Video">Video</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="form-group full-width">
                         <label>Description</label>
-                        <textarea rows="3" placeholder="Brief description of the material..." required></textarea>
+                        <textarea rows="3" placeholder="Brief description of the material..." required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}></textarea>
                     </div>
 
                     <div className="form-group full-width file-upload-group">

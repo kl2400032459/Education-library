@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import Card from '../../components/Card';
-import { MOCK_RESOURCES } from '../../data/mockData';
 import './BrowseResources.css';
 
 const FILTER_SUBJECTS = ['All', 'Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'History', 'Web Dev'];
@@ -18,6 +17,7 @@ const BrowseResources = () => {
     const [viewMode, setViewMode] = useState('grid');
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [sortBy, setSortBy] = useState('popular');
+    const [resources, setResources] = useState([]);
 
     const [filters, setFilters] = useState({
         subject: FILTER_SUBJECTS.includes(initialSubject) ? initialSubject : 'All',
@@ -25,6 +25,15 @@ const BrowseResources = () => {
         type: 'All'
     });
 
+    useEffect(() => {
+        const loadDocs = async () => {
+            const { getStoredResources } = await import('../../data/mockData');
+            // Only show active resources to regular users
+            const allRes = getStoredResources();
+            setResources(allRes.filter(r => r.status === 'Active'));
+        };
+        loadDocs();
+    }, []);
 
     const handleFilterChange = (filterName, value) => {
         setFilters(prev => ({ ...prev, [filterName]: value }));
@@ -36,7 +45,7 @@ const BrowseResources = () => {
     };
 
     // Filter Logic
-    const filteredResources = MOCK_RESOURCES.filter(res => {
+    const filteredResources = resources.filter(res => {
         const matchesSearch = res.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             res.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesSubject = filters.subject === 'All' || res.subject === filters.subject;

@@ -1,4 +1,4 @@
-export const MOCK_RESOURCES = [
+const INITIAL_RESOURCES = [
     {
         id: 1,
         title: 'Introduction to Algorithms',
@@ -130,18 +130,71 @@ export const MOCK_RESOURCES = [
     { id: 27, title: 'Digital Marketing Strategies', subject: 'Business', department: 'Business', type: 'Video', rating: 4.5, description: 'SEO, SEM, social media marketing, and conversion rate optimization.', tags: ['Marketing', 'SEO', 'Business'], thumb: '📱', uploader: 'Marketing Guru', uploadDate: '2023-10-18', downloads: 1750, size: '850 MB', pages: 0, contentPreview: 'Understanding your target audience is the first step in any organic campaign...', videoUrl: 'mock-marketing.mp4' },
     { id: 28, title: 'Human Anatomy', subject: 'Biology', department: 'Science', type: 'Textbook', rating: 4.8, description: 'Detailed diagrams and systemic overviews of the human body.', tags: ['Anatomy', 'Medicine', 'Biology'], thumb: '🦴', uploader: 'Dr. House', uploadDate: '2023-12-01', downloads: 3400, size: '85 MB', pages: 1200, contentPreview: 'The skeletal system provides the structural framework for the human body...', pdfUrl: 'mock-anatomy.pdf' },
     { id: 29, title: 'Mobile App Dev with Flutter', subject: 'Computer Science', department: 'Engineering', type: 'Video', rating: 4.7, description: 'Cross-platform mobile development using Dart and Flutter widgets.', tags: ['Flutter', 'Mobile', 'Dart'], thumb: '📱', uploader: 'App Dev Inc', uploadDate: '2024-02-05', downloads: 2500, size: '1.8 GB', pages: 0, contentPreview: 'Everything in Flutter is a widget. Let us build our first material app...', videoUrl: 'mock-flutter.mp4' },
-    { id: 30, title: 'Environmental Science', subject: 'Science', department: 'Science', type: 'Notes', rating: 4.4, description: 'Climate change, sustainability, and ecological conservation.', tags: ['Environment', 'Climate', 'Ecology'], thumb: '🌱', uploader: 'Eco Warrior', uploadDate: '2023-09-12', downloads: 820, size: '7 MB', pages: 130, contentPreview: 'Sustainability requires meeting present needs without compromising future generations...', pdfUrl: 'mock-env.pdf' }
+    { id: 30, title: 'Environmental Science', subject: 'Science', department: 'Science', type: 'Notes', rating: 4.4, description: 'Climate change, sustainability, and ecological conservation.', tags: ['Environment', 'Climate', 'Ecology'], thumb: '🌱', uploader: 'Suresh Varma', uploadDate: '2023-09-12', downloads: 820, size: '7 MB', pages: 130, contentPreview: 'Sustainability requires meeting present needs without compromising future generations...', pdfUrl: 'mock-env.pdf', status: 'Active' }
+];
+
+const INITIAL_USERS = [
+    { id: 'U001', name: 'Nikhil Reddy', email: 'nikhil@student.edu', role: 'Student', status: 'Active', joined: '2023-08-15' },
+    { id: 'U002', name: 'Dr. Srinivas Rao', email: 'srinivas@faculty.edu', role: 'Faculty', status: 'Active', joined: '2023-09-01' },
+    { id: 'U003', name: 'Nikita Chowdary', email: 'nikita@student.edu', role: 'Student', status: 'Suspended', joined: '2023-10-12' },
+    { id: 'U004', name: 'Ooha Sharma', email: 'ooha@student.edu', role: 'Student', status: 'Active', joined: '2024-01-05' },
+    { id: 'U005', name: 'Sai Teja', email: 'sai@admin.edu', role: 'Admin', status: 'Active', joined: '2023-11-20' },
+    { id: 'U006', name: 'Pradeep Kumar', email: 'pradeep@faculty.edu', role: 'Faculty', status: 'Active', joined: '2024-02-10' },
+];
+
+const INITIAL_FEEDBACK = [
+    { id: 'FB001', user: 'Nikhil Reddy', role: 'Student', rating: 5, status: 'New', date: '2026-02-22', message: 'Excellent breakdown of React Hooks. Helped me immensely in my final project!' },
+    { id: 'FB002', user: 'Dr. Srinivas Rao', role: 'Faculty', rating: 4, status: 'Reviewed', date: '2026-02-21', message: 'Solid notes on Calculus, but could use a few more examples for integration by parts.' },
+    { id: 'FB003', user: 'Nikita Chowdary', role: 'Student', rating: 2, status: 'New', date: '2026-02-20', message: 'The Physics Lab PDF has some formatting issues on mobile devices.' },
+    { id: 'FB004', user: 'Sai Teja', role: 'Admin', rating: 5, status: 'Resolved', date: '2026-02-19', message: 'The new resource upload limit is working perfectly.' },
+    { id: 'FB005', user: 'Ooha Sharma', role: 'Student', rating: 1, status: 'New', date: '2026-02-18', message: 'I cannot find the semester code filters anymore. Help!' },
 ];
 
 export const MOCK_COMMENTS = [
-    { id: 101, resourceId: 1, user: 'Alice Chen', rating: 5, date: '2 days ago', text: 'This book saved my life for the midterms. Highly recommended!' },
-    { id: 102, resourceId: 1, user: 'Bob Builder', rating: 4, date: '1 week ago', text: 'Great resource, but some of the graph examples are a bit hard to follow without prior knowledge.' },
-    { id: 103, resourceId: 2, user: 'Charlie', rating: 5, date: '3 days ago', text: 'Limits finally make sense to me now.' },
-    { id: 104, resourceId: 4, user: 'Dave', rating: 5, date: '1 day ago', text: 'The section on custom hooks is pure gold.' }
+    { id: 101, resourceId: 1, user: 'Rakesh Verma', rating: 5, date: '2 days ago', text: 'This book saved my life for the midterms. Highly recommended!' },
+    { id: 102, resourceId: 1, user: 'Bhavya Sri', rating: 4, date: '1 week ago', text: 'Great resource, but some of the graph examples are a bit hard to follow without prior knowledge.' },
+    { id: 103, resourceId: 2, user: 'Karthik', rating: 5, date: '3 days ago', text: 'Limits finally make sense to me now.' },
+    { id: 104, resourceId: 4, user: 'Divya', rating: 5, date: '1 day ago', text: 'The section on custom hooks is pure gold.' }
 ];
 
+// Helper functions for Local Storage initialization and management
+const initializeData = (key, data) => {
+    if (!localStorage.getItem(key)) {
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+};
+
+export const getStoredResources = () => {
+    initializeData('libraryItems', INITIAL_RESOURCES);
+    return JSON.parse(localStorage.getItem('libraryItems'));
+};
+
+export const setStoredResources = (data) => {
+    localStorage.setItem('libraryItems', JSON.stringify(data));
+};
+
+export const getStoredUsers = () => {
+    initializeData('libraryUsers', INITIAL_USERS);
+    return JSON.parse(localStorage.getItem('libraryUsers'));
+};
+
+export const setStoredUsers = (data) => {
+    localStorage.setItem('libraryUsers', JSON.stringify(data));
+};
+
+export const getStoredFeedback = () => {
+    initializeData('libraryFeedback', INITIAL_FEEDBACK);
+    return JSON.parse(localStorage.getItem('libraryFeedback'));
+};
+
+export const setStoredFeedback = (data) => {
+    localStorage.setItem('libraryFeedback', JSON.stringify(data));
+};
+
+
 export const getResourceById = (id) => {
-    return MOCK_RESOURCES.find(r => r.id === parseInt(id));
+    const resources = getStoredResources();
+    return resources.find(r => r.id === parseInt(id));
 };
 
 export const getCommentsForResource = (id) => {

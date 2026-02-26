@@ -1,21 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Card from '../../components/Card';
 import Toast from '../../components/Toast';
 import { isBookmarked as checkBookmarked, addBookmark, removeBookmark, addDownload, addFeedback } from '../../utils/storage';
-import { getResourceById, getCommentsForResource } from '../../data/mockData';
-import './ResourceDetails.css';
 
 const ResourceDetails = ({ role }) => {
     const { id: _id } = useParams();
-    const resource = getResourceById(_id);
-    const comments = getCommentsForResource(_id);
+    const [resource, setResource] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [isBookmarked, setIsBookmarked] = useState(() => resource ? checkBookmarked(resource.id) : false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
     const [ratingInput, setRatingInput] = useState(0);
     const [commentInput, setCommentInput] = useState('');
     const [toasts, setToasts] = useState([]);
+
+    useEffect(() => {
+        const loadDetails = async () => {
+            const { getStoredResources, getCommentsForResource } = await import('../../data/mockData');
+            const resData = getStoredResources().find(r => r.id === parseInt(_id));
+            setResource(resData);
+            setComments(getCommentsForResource(_id));
+
+            if (resData) {
+                setIsBookmarked(checkBookmarked(resData.id));
+            }
+            setIsLoading(false);
+        };
+        loadDetails();
+    }, [_id]);
+
+    if (isLoading) {
+        return <div className="resource-details-page"><h2 style={{ marginTop: '4rem', textAlign: 'center' }}>Loading...</h2></div>;
+    }
 
     if (!resource) {
         return (
