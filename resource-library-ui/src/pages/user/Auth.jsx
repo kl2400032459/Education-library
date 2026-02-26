@@ -64,6 +64,8 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
+            localStorage.setItem('userEmail', formData.email);
+            localStorage.setItem('userName', formData.name || formData.email.split('@')[0]);
             setGlobalRole(role);
             navigate('/home');
         }

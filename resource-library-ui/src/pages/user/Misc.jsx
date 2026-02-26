@@ -9,12 +9,20 @@ import './Misc.css';
 export const Profile = ({ role }) => {
     const [activeTab, setActiveTab] = useState('downloads');
 
+    const userEmail = localStorage.getItem('userEmail') || 'john.doe@email.com';
+    const userName = localStorage.getItem('userName') || 'John Doe';
+    const getInitials = (name) => {
+        const parts = name.split(' ');
+        if (parts.length > 1) return (parts[0][0] + parts[1][0]).toUpperCase();
+        return name.slice(0, 2).toUpperCase();
+    };
+
     const userInfo = {
-        name: 'John Doe',
-        email: 'john.doe@email.com',
-        role: 'Student',
-        avatar: 'JD',
-        department: 'Computer Science'
+        name: userName,
+        email: userEmail,
+        role: role !== 'guest' ? role : 'Student',
+        avatar: getInitials(userName),
+        department: 'Computer Science' // Default static mock fallback
     };
 
     const [downloads] = useState(() => getDownloads());

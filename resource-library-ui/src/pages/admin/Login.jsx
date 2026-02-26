@@ -14,6 +14,8 @@ const AdminLogin = ({ setRole }) => {
         e.preventDefault();
 
         if (email === 'mpravaliswaraj@gmail.com' && password === '123456') {
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userName', 'Admin User');
             if (setRole) setRole('Admin');
             navigate('/admin/dashboard');
         } else {
