@@ -58,10 +58,7 @@
 }
 
 .text-highlight {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
 }
 
 .hero-subtitle {
@@ -93,11 +90,12 @@
     border-color: var(--primary);
 }
 
-.search-icon {
+.hero-search-icon {
     width: 20px;
     height: 20px;
     color: var(--text-muted);
     margin-left: 1rem;
+    flex-shrink: 0;
 }
 
 .hero-search {
@@ -374,7 +372,7 @@
         margin-top: 0.5rem;
     }
 
-    .search-icon {
+    .hero-search-icon {
         display: none;
     }
 }
