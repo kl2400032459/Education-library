@@ -21,8 +21,7 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
 
     const roles = [
         { id: 'Student', label: 'Student' },
-        { id: 'Faculty', label: 'Faculty' },
-        { id: 'Admin', label: 'Admin' }
+        { id: 'Faculty', label: 'Faculty' }
     ];
 
     const calculateStrength = (pwd) => {
@@ -66,8 +65,7 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
         e.preventDefault();
         if (validateForm()) {
             setGlobalRole(role);
-            if (role === 'Admin') navigate('/admin/dashboard');
-            else navigate('/home');
+            navigate('/home');
         }
     };
 
@@ -183,14 +181,6 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
                                             {errors.idNumber && <span className="field-error">{errors.idNumber}</span>}
                                         </div>
                                     </>
-                                )}
-
-                                {role === 'Admin' && (
-                                    <div className="input-field">
-                                        <label>Admin Secret Key</label>
-                                        <input type="password" name="idNumber" value={formData.idNumber} onChange={handleChange} placeholder="Provide authorization key..." />
-                                        {errors.idNumber && <span className="field-error">{errors.idNumber}</span>}
-                                    </div>
                                 )}
 
 
