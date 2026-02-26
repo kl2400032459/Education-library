@@ -33,25 +33,27 @@ const AdminLogin = ({ setRole }) => {
                 <h2 className="auth-title">Admin Secure Login</h2>
 
                 <form className="auth-form-minimal" onSubmit={handleLogin}>
-                    <div className="input-field">
-                        <label>Admin ID or Email</label>
-                        <input
-                            type="text"
-                            placeholder="admin@domain.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="input-field">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                    <div className="auth-fields-container">
+                        <div className="input-field">
+                            <label>Admin ID or Email</label>
+                            <input
+                                type="text"
+                                placeholder="admin@domain.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="input-field">
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
                     </div>
                     {error && <div className="field-error" style={{ textAlign: 'center', marginTop: '1rem' }}>{error}</div>}
                     <button type="submit" className="primary-action-btn" style={{ marginTop: '1.5rem' }}>Login to Dashboard</button>
