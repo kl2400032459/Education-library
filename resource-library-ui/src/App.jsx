@@ -69,10 +69,10 @@ const PageTransition = ({ children }) => {
   );
 };
 
-const LayoutContainer = ({ children, isAdmin, role, setRole }) => {
+const LayoutContainer = ({ children, isAdmin, role, setRole, hideNavbar }) => {
   return (
     <div className={`app-container ${isAdmin ? 'admin-layout' : 'user-layout'}`}>
-      {!isAdmin && <Navbar role={role} setRole={setRole} />}
+      {!hideNavbar && <Navbar role={role} setRole={setRole} />}
       <main className="main-content" style={isAdmin ? { paddingTop: '2rem' } : {}}>
         <PageTransition>{children}</PageTransition>
       </main>
@@ -104,7 +104,7 @@ const App = () => {
         <Route path="/contact" element={<LayoutContainer role={role} setRole={setRole}><ContactUs /></LayoutContainer>} />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><AdminLogin setRole={setRole} /></LayoutContainer>} />
+        <Route path="/admin/login" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole} hideNavbar={true}><AdminLogin setRole={setRole} /></LayoutContainer>} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={role === 'Admin' ? <LayoutContainer isAdmin={true} role={role} setRole={setRole}><AdminDashboard /></LayoutContainer> : <Navigate to="/admin/login" />} />
         <Route path="/admin/upload" element={role === 'Admin' || role === 'Faculty' ? <LayoutContainer isAdmin={role === 'Admin'} role={role} setRole={setRole}><UploadResource /></LayoutContainer> : <LayoutContainer role={role} setRole={setRole}><AccessDenied role={role} /></LayoutContainer>} />

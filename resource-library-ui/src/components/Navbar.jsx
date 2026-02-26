@@ -122,14 +122,18 @@ const Navbar = ({ role, setRole }) => {
                                     <button
                                         className="avatar-btn"
                                         onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                        title="Your Profile"
+                                        title={role === 'Admin' ? 'Admin Menu' : 'Your Profile'}
                                     >
-                                        <div className="avatar">A</div>
+                                        <div className="avatar">{role === 'Admin' ? 'A' : 'U'}</div>
                                     </button>
                                     {isProfileOpen && (
                                         <div className="dropdown-menu profile-dropdown glass">
                                             <div className="dropdown-header">Account</div>
-                                            <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>My Profile</Link>
+                                            {role === 'Admin' ? (
+                                                <Link to="/admin/dashboard" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>Admin Dashboard</Link>
+                                            ) : (
+                                                <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileOpen(false)}>My Profile</Link>
+                                            )}
                                             <div className="divider"></div>
                                             <button className="dropdown-item logout-colored" onClick={handleLogout}>Logout</button>
                                         </div>
