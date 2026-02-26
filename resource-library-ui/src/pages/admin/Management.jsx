@@ -43,6 +43,22 @@ export const ManageResources = () => {
         setResources(updatedRes);
     }
 
+    const handleEdit = async (id, currentTitle) => {
+        const newTitle = window.prompt("Enter new title for this resource:", currentTitle);
+        if (!newTitle || newTitle.trim() === "") return;
+
+        const { getStoredResources, setStoredResources } = await import('../../data/mockData');
+        const currentRes = getStoredResources();
+        const updatedRes = currentRes.map(r => {
+            if (r.id === id) {
+                return { ...r, title: newTitle.trim() };
+            }
+            return r;
+        });
+        setStoredResources(updatedRes);
+        setResources(updatedRes);
+    };
+
     const columns = [
         { Header: 'ID', accessor: 'id' },
         { Header: 'Title', accessor: 'title' },
@@ -70,6 +86,7 @@ export const ManageResources = () => {
         status: <span className={`status-pill ${(res.status || 'Active').toLowerCase()}`}>{res.status || 'Active'}</span>,
         actions: (
             <div className="table-actions">
+                <button className="action-icon edit" title="Edit" onClick={() => handleEdit(res.id, res.title)}>✏️</button>
                 <button
                     className={`action-icon ${res.status === 'Active' ? 'lock' : 'approve'}`}
                     title={res.status === 'Active' ? 'Suspend' : 'Approve'}
@@ -150,6 +167,22 @@ export const ManageUsers = () => {
         setUsers(updatedUsers);
     };
 
+    const handleEditUser = async (id, currentName) => {
+        const newName = window.prompt("Enter new name for this user:", currentName);
+        if (!newName || newName.trim() === "") return;
+
+        const { getStoredUsers, setStoredUsers } = await import('../../data/mockData');
+        const currentUsers = getStoredUsers();
+        const updatedUsers = currentUsers.map(u => {
+            if (u.id === id) {
+                return { ...u, name: newName.trim() };
+            }
+            return u;
+        });
+        setStoredUsers(updatedUsers);
+        setUsers(updatedUsers);
+    };
+
     const columns = [
         { Header: 'User ID', accessor: 'id' },
         { Header: 'Name', accessor: 'name' },
@@ -177,6 +210,7 @@ export const ManageUsers = () => {
         status: <span className={`status-pill ${u.status.toLowerCase()}`}>{u.status}</span>,
         actions: (
             <div className="table-actions">
+                <button className="action-icon edit" title="Edit User" onClick={() => handleEditUser(u.id, u.name)}>✏️</button>
                 <button
                     className={`action-icon ${u.status === 'Active' ? 'lock' : 'approve'}`}
                     title={u.status === 'Active' ? 'Suspend User' : 'Restore User'}
