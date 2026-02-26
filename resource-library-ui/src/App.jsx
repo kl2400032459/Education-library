@@ -24,6 +24,33 @@ import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import { UploadResource, ManageResources, ManageUsers, ViewFeedback } from './pages/admin/Management';
 
+const AccessDenied = ({ role }) => {
+  return (
+    <div className="page-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="glass-card"
+        style={{ padding: '4rem', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '16px' }}
+      >
+        <span style={{ fontSize: '4rem', display: 'block', marginBottom: '1rem' }}>🔒</span>
+        <h2 style={{ fontSize: '2rem', color: 'var(--text-main)', marginBottom: '1rem' }}>Access Denied</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', maxWidth: '400px', fontSize: '1.1rem' }}>
+          Please log in as a <strong>Faculty</strong> or <strong>Admin</strong> to upload resources.<br /><br />
+          {role === 'Student' ? 'If you are a student, you are unable to upload resources.' : ''}
+        </p>
+        <Link to="/login" style={{ display: 'inline-block', padding: '0.8rem 2rem', background: 'var(--primary)', color: 'white', textDecoration: 'none', borderRadius: '30px', fontWeight: '600', transition: 'transform 0.2s', marginRight: '1rem' }}>
+          Sign In
+        </Link>
+        <Link to="/home" style={{ display: 'inline-block', padding: '0.8rem 2rem', background: 'var(--surface)', color: 'var(--text-main)', border: '2px solid var(--glass-border)', textDecoration: 'none', borderRadius: '30px', fontWeight: '600', transition: 'transform 0.2s' }}>
+          Back to Home
+        </Link>
+      </motion.div>
+    </div>
+  );
+};
+
 const PageTransition = ({ children }) => {
   const location = useLocation();
   return (
@@ -45,8 +72,8 @@ const PageTransition = ({ children }) => {
 const LayoutContainer = ({ children, isAdmin, role, setRole }) => {
   return (
     <div className={`app-container ${isAdmin ? 'admin-layout' : 'user-layout'}`}>
-      <Navbar role={role} setRole={setRole} />
-      <main className="main-content">
+      {!isAdmin && <Navbar role={role} setRole={setRole} />}
+      <main className="main-content" style={isAdmin ? { paddingTop: '2rem' } : {}}>
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
@@ -79,8 +106,8 @@ const App = () => {
         {/* Admin Routes */}
         <Route path="/admin/login" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><AdminLogin /></LayoutContainer>} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/admin/dashboard" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><AdminDashboard /></LayoutContainer>} />
-        <Route path="/admin/upload" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><UploadResource /></LayoutContainer>} />
+        <Route path="/admin/dashboard" element={role === 'Admin' ? <LayoutContainer isAdmin={true} role={role} setRole={setRole}><AdminDashboard /></LayoutContainer> : <Navigate to="/admin/login" />} />
+        <Route path="/admin/upload" element={role === 'Admin' || role === 'Faculty' ? <LayoutContainer isAdmin={role === 'Admin'} role={role} setRole={setRole}><UploadResource /></LayoutContainer> : <LayoutContainer role={role} setRole={setRole}><AccessDenied role={role} /></LayoutContainer>} />
         <Route path="/admin/resources" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><ManageResources /></LayoutContainer>} />
         <Route path="/admin/users" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><ManageUsers /></LayoutContainer>} />
         <Route path="/admin/feedback" element={<LayoutContainer isAdmin={true} role={role} setRole={setRole}><ViewFeedback /></LayoutContainer>} />
