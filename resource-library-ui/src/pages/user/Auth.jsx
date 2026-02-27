@@ -12,6 +12,7 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
         confirmPassword: '',
         dept: '',
         idNumber: '',
+        secretCode: '',
         terms: false,
         remember: false
     });
@@ -48,6 +49,11 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
         const newErrors = {};
         if (!formData.email) newErrors.email = 'Required';
         if (!formData.password) newErrors.password = 'Required';
+
+        if (mode === 'login' && role === 'Admin') {
+            if (!formData.secretCode) newErrors.secretCode = 'Required';
+        }
+
         if (mode === 'signup') {
             if (!formData.name) newErrors.name = 'Required';
             if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Mismatch';
@@ -66,11 +72,15 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
         e.preventDefault();
         if (validateForm()) {
             // Check for specific admin credentials
-            if (formData.email === 'mpravaliswaraj@gmail.com' && formData.password === '123456') {
-                localStorage.setItem('userEmail', formData.email);
-                localStorage.setItem('userName', 'Admin User');
-                setGlobalRole('Admin');
-                navigate('/admin/dashboard');
+            if (role === 'Admin') {
+                if (formData.email === 'mpravaliswaraj@gmail.com' && formData.password === '123456' && formData.secretCode === 'admin123') {
+                    localStorage.setItem('userEmail', formData.email);
+                    localStorage.setItem('userName', 'Admin User');
+                    setGlobalRole('Admin');
+                    navigate('/admin/dashboard');
+                } else {
+                    setErrors({ email: 'Invalid admin credentials or secret code' });
+                }
                 return;
             }
 
@@ -152,6 +162,14 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
                                     <input type={showPassword ? "text" : "password"} name="password" value={formData.password} onChange={handleChange} />
                                     {errors.password && <span className="field-error">{errors.password}</span>}
                                 </div>
+
+                                {role === 'Admin' && (
+                                    <div className="input-field">
+                                        <label>Secret Code</label>
+                                        <input type="password" name="secretCode" value={formData.secretCode} onChange={handleChange} placeholder="Enter admin secret code" />
+                                        {errors.secretCode && <span className="field-error">{errors.secretCode}</span>}
+                                    </div>
+                                )}
 
                                 <div className="form-options">
                                     <label className="check-label">
