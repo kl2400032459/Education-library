@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Card from '../../components/Card';
 import Toast from '../../components/Toast';
 import { isBookmarked as checkBookmarked, addBookmark, removeBookmark, addDownload, addFeedback } from '../../utils/storage';
+import './ResourceDetails.css';
 
 const ResourceDetails = ({ role }) => {
     const { id: _id } = useParams();
