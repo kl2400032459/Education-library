@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
@@ -25,6 +25,12 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
         { id: 'Faculty', label: 'Faculty' },
         { id: 'Admin', label: 'Admin' }
     ];
+
+    useEffect(() => {
+        if (mode === 'signup' && role === 'Admin') {
+            setRole('Student');
+        }
+    }, [mode, role, setRole]);
 
     const calculateStrength = (pwd) => {
         let score = 0;
@@ -125,7 +131,7 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
                 <form className="auth-form-minimal" onSubmit={handleSubmit}>
                     {/* Role Selection to choose account type or login as */}
                     <div className="role-segmented-control">
-                        {roles.map(r => (
+                        {roles.filter(r => mode === 'login' || r.id !== 'Admin').map(r => (
                             <button
                                 key={r.id}
                                 className={`role-segment ${role === r.id ? 'active' : ''}`}
