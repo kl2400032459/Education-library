@@ -64,6 +64,16 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
+            // Check for specific admin credentials
+            if (formData.email === 'mpravaliswaraj@gmail.com' && formData.password === '123456') {
+                localStorage.setItem('userEmail', formData.email);
+                localStorage.setItem('userName', 'Admin User');
+                setGlobalRole('Admin');
+                navigate('/admin/dashboard');
+                return;
+            }
+
+            // Normal user login
             localStorage.setItem('userEmail', formData.email);
             localStorage.setItem('userName', formData.name || formData.email.split('@')[0]);
             setGlobalRole(role);
