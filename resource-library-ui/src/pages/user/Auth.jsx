@@ -21,7 +21,8 @@ const AuthCard = ({ mode, role, setRole, setGlobalRole }) => {
 
     const roles = [
         { id: 'Student', label: 'Student' },
-        { id: 'Faculty', label: 'Faculty' }
+        { id: 'Faculty', label: 'Faculty' },
+        { id: 'Admin', label: 'Admin' }
     ];
 
     const calculateStrength = (pwd) => {
